@@ -9,14 +9,14 @@ from models import Transaction, User, TransactionType
 
 router = APIRouter(prefix="/transactions", tags=["transactions"]) #This router will handle all transaction related endpoints.
 
-@router.post("/", response_model=TransactionResponse)
+@router.post("/", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 def create_transaction(
     transaction: TransactionCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     new_transaction = Transaction(
-        **transaction.dict(),
+        **transaction.model_dump(),
         user_id=current_user.id,
         created_at=datetime.now()
     )
@@ -85,7 +85,7 @@ def update_transaction(
     if not transaction:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
 
-    for field, value in updates.dict(exclude_unset=True).items():
+    for field, value in updates.model_dump(exclude_unset=True).items():
         setattr(transaction, field, value)
 
     db.commit()
