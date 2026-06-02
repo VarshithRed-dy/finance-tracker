@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from models import TransactionType
@@ -16,7 +16,7 @@ class UserResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        from_attributes = True # This allows the model to be used with SQLAlchemy objects as Pydantic doesn't understand them inherently.
+        from_attributes = True  #Allows Pydantic to read fields from SQLAlchemy objects.
 
 class Token(BaseModel):
     access_token: str #The jwt string

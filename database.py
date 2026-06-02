@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 DATABASE_URL = "sqlite:///./finance_tracker.db" #sqlite:/// means "use SQLite, and the file is at this path." ./finance.db
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}) #engine is the connection to the database, check_same_thread = False allows multiple threads(parts of your app) to use the database at the same time.
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}) #engine is the connection to the database, check_same_thread = False, allows multiple threads(parts of your app) to use the database at the same time.
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) #SessionLocal is a factory that creates a new database connection(session) for each request.
 
