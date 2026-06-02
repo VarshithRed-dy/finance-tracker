@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 from models import TransactionType
 
 class UserCreate(BaseModel):
@@ -50,6 +50,11 @@ class TransactionResponse(TransactionCreate):
     class Config:
         from_attributes = True
 
-
+class TransactionListResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    items: List[TransactionResponse]
 
 
