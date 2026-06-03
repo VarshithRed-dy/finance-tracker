@@ -8,7 +8,7 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # check_same_thread is a SQLite-only setting
-connect_args={"check_same_thread": False} if DATABASE_URL.startswith("postgresql://") else {}
+connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(DATABASE_URL, connect_args=connect_args) #engine is the connection to the database, check_same_thread = False, allows multiple threads(parts of your app) to use the database at the same time.
 
