@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+import logging
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from database import Base, engine, get_db
 from routers import users, transactions, analytics
 
@@ -13,3 +15,16 @@ app.include_router(analytics.router)
 @app.get("/")
 def root():
     return {"message": "Welcome to the Personal Finance Tracker API"}
+
+logger = logging.getLogger("uvicorn.error")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(
+    request: Request,
+    exc: Exception
+):
+    logger.exception(f"Unhandled error at {request.url.path}")
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal server error"}
+    )

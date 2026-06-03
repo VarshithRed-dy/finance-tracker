@@ -1,12 +1,12 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from models import TransactionType
 
 class UserCreate(BaseModel):
-    username: str
+    username: str = Field(min_length=3, max_length=30)
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8)
 
 
 class UserResponse(BaseModel):
@@ -23,27 +23,22 @@ class Token(BaseModel):
     token_type: str #Always "bearer"
 
 class TransactionCreate(BaseModel): # user_id is not included as it will be derived from the token
-    amount: float
+    amount: float = Field(gt=0, description="Amount must be positive")
     type: TransactionType
-    category: str
-    note: Optional[str] = None
+    category: str = Field(min_length=3, max_length=50)
+    note: Optional[str] = Field(None, max_length=255)
     date: datetime
 
 class TransactionUpdate(BaseModel):
-    amount: Optional[float] = None
+    amount: Optional[float] = Field(None, gt=0)
     type: Optional[TransactionType] = None
-    category: Optional[str] = None
-    note: Optional[str] = None
+    category: Optional[str] = Field(None, min_length=3, max_length=50)
+    note: Optional[str] = Field(None, max_length=255)
     date: Optional[datetime] = None
 
 
 class TransactionResponse(TransactionCreate):
     id: int
-    amount: float
-    type: TransactionType
-    category: str
-    note: Optional[str] = None
-    date: datetime
     created_at: datetime
     user_id: int 
 
