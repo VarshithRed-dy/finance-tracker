@@ -1,4 +1,8 @@
+from fileinput import filename
 from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi.responses import StreamingResponse
+import csv
+import io
 from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime
@@ -108,3 +112,27 @@ def delete_transaction(
     db.delete(transaction)
     db.commit()
     return {"detail": f"Transaction {transaction_id} deleted"}
+
+@router.get("/export/csv")
+def export_csv(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    transactions = db.query(Transaction).filter(Transaction.user_id == current_user.id).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Amount", "Type", "Category", "Note", "Date", "Created At"])
+
+    for txn in transactions:
+        writer.writerow([txn.id, txn.amount, txn.category, txn.note, txn.date, txn.created_at])
+
+    output.seek(0)
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode()),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename = transactions.csv"}
+    )
+
+
+
